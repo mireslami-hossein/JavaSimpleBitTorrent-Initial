@@ -1,10 +1,11 @@
 package tracker.controllers;
 
 import common.models.CLICommands;
+import common.models.Message;
 import tracker.app.PeerConnectionThread;
 import tracker.app.TrackerApp;
 
-import java.util.List;
+import java.util.*;
 
 public class TrackerCLIController {
 	public static String processCommand(String command) {
@@ -15,6 +16,8 @@ public class TrackerCLIController {
 			return listPeers();
 		} else if (TrackerCommands.GET_RECEIVES.matches(command)) {
 			return getReceives(command);
+		} else if (TrackerCommands.GET_SENDS.matches(command)) {
+			return getSends(command);
 		}
 		else {
 			return CLICommands.invalidCommand;
@@ -22,17 +25,64 @@ public class TrackerCLIController {
 	}
 
 	private static String getReceives(String command) {
-		// TODO: Get list of files received by a peer
 		String IP = TrackerCommands.GET_RECEIVES.getGroup(command, "IP");
-		String port = TrackerCommands.GET_RECEIVES.getGroup(command, "port");
-		throw new UnsupportedOperationException("getReceives not implemented yet");
+		int port = Integer.parseInt(TrackerCommands.GET_RECEIVES.getGroup(command, "port"));
+		PeerConnectionThread connectionToPeer = TrackerApp.getConnectionByIpPort(IP, port);
+		if (connectionToPeer == null)
+			return "Peer not found.";
+		Map<String, List<String>> receivedFiles = TrackerConnectionController.getReceives(connectionToPeer);
+		if (receivedFiles == null || receivedFiles.isEmpty())
+			return "No files received by " + IP + ":" + port;
+
+		StringBuilder result = new StringBuilder();
+		// Sorting lists
+		for (String address : receivedFiles.keySet()) {
+			List<String> filesSorted = receivedFiles.get(address);
+			Collections.sort(filesSorted);
+		}
+
+		// TODO : check sort
+		TreeMap<String, List<String>> sortedReceivedFiles = new TreeMap<>(receivedFiles);
+		for (Map.Entry<String, List<String>> entry : sortedReceivedFiles.entrySet()) {
+			for (String fileData : entry.getValue()) {
+				result.append(fileData);
+				result.append(" - ");
+				result.append(entry.getKey() + "\n");
+			}
+		}
+		result.deleteCharAt(result.length() - 1);
+		return result.toString();
 	}
 
 	private static String getSends(String command) {
-		// TODO: Get list of files sent by a peer
-		String IP = TrackerCommands.GET_RECEIVES.getGroup(command, "IP");
-		String port = TrackerCommands.GET_RECEIVES.getGroup(command, "port");
-		throw new UnsupportedOperationException("getSends not implemented yet");
+		String IP = TrackerCommands.GET_SENDS.getGroup(command, "IP");
+		int port = Integer.parseInt(TrackerCommands.GET_SENDS.getGroup(command, "port"));
+		PeerConnectionThread connectionToPeer = TrackerApp.getConnectionByIpPort(IP, port);
+		if (connectionToPeer == null)
+			return "Peer not found.";
+
+		Map<String, List<String>> sentFiles = TrackerConnectionController.getSends(connectionToPeer);
+		if (sentFiles == null || sentFiles.isEmpty())
+			return "No files sent by " + IP + ":" + port;
+
+		StringBuilder result = new StringBuilder();
+		// Sorting lists
+		for (String address : sentFiles.keySet()) {
+			List<String> filesSorted = sentFiles.get(address);
+			Collections.sort(filesSorted);
+		}
+
+		// TODO : check sort
+		TreeMap<String, List<String>> sortedSentFiles = new TreeMap<>(sentFiles);
+		for (Map.Entry<String, List<String>> entry : sortedSentFiles.entrySet()) {
+			for (String fileData : entry.getValue()) {
+				result.append(fileData);
+				result.append(" - ");
+				result.append(entry.getKey() + "\n");
+			}
+		}
+		result.deleteCharAt(result.length() - 1);
+		return result.toString();
 	}
 
 	private static String listFiles(String command) {
