@@ -2,6 +2,7 @@ package tracker.controllers;
 
 import common.models.CLICommands;
 import common.models.Message;
+import common.utils.FileUtils;
 import tracker.app.PeerConnectionThread;
 import tracker.app.TrackerApp;
 
@@ -18,6 +19,10 @@ public class TrackerCLIController {
 			return getReceives(command);
 		} else if (TrackerCommands.GET_SENDS.matches(command)) {
 			return getSends(command);
+		} else if (TrackerCommands.LIST_FILES.matches(command)) {
+			return listFiles(command);
+		} else if (TrackerCommands.REFRESH_FILES.matches(command)) {
+			return refreshFiles();
 		}
 		else {
 			return CLICommands.invalidCommand;
@@ -86,8 +91,12 @@ public class TrackerCLIController {
 	}
 
 	private static String listFiles(String command) {
-		// TODO: List files of a peer (do not send command, use the cached list)
-		throw new UnsupportedOperationException("listFiles not implemented yet");
+		String IP = TrackerCommands.LIST_FILES.getGroup(command, "IP");
+		int port = Integer.parseInt(TrackerCommands.LIST_FILES.getGroup(command, "port"));
+
+		PeerConnectionThread connection = TrackerApp.getConnectionByIpPort(IP, port);
+		if (connection == null) return "Peer not found.";
+		return FileUtils.getSortedFileList(connection.getFileAndHashes());
 	}
 
 	private static String listPeers() {
@@ -110,8 +119,10 @@ public class TrackerCLIController {
 	}
 
 	private static String refreshFiles() {
-		// TODO: Refresh file lists for all peers
-		throw new UnsupportedOperationException("refreshFiles not implemented yet");
+		for (PeerConnectionThread connection : TrackerApp.getConnections()) {
+			connection.refreshFileList();
+		}
+		return "";
 	}
 
 	private static String endProgram() {
