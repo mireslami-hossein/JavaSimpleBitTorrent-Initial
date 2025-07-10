@@ -92,6 +92,7 @@ public class PeerApp {
 	}
 
 	public static void addSentFile(String receiver, String fileNameAndHash) {
+//		TODO : call in download file
 		List<String> files = sentFilesHashes.get(receiver);
 		if (files == null) {
 			files = new ArrayList<>();
@@ -100,6 +101,7 @@ public class PeerApp {
 	}
 
 	public static void addReceivedFile(String sender, String fileNameAndHash) {
+		//		TODO : call in download file
 		List<String> files = receivedFilesHashes.get(sender);
 		if (files == null) {
 			files = new ArrayList<>();

@@ -9,21 +9,35 @@ import java.util.HashMap;
 
 public class P2TConnectionController {
 	public static Message handleCommand(Message message) {
-		// TODO: Handle incoming tracker-to-peer commands
 		// 1. Parse command from message
+		String command = message.getFromBody("command");
 		// 2. Call appropriate handler (status, get_files_list, get_sends, get_receives)
 		// 3. Return response message
-		throw new UnsupportedOperationException("handleCommand not implemented yet");
-	}
+		return switch (command) {
+            case "status" -> status();
+            case "get_files_list" -> getFilesList();
+            case "get_sends" -> getSends();
+			default -> getReceives();
+        };
+
+    }
 
 	private static Message getReceives() {
 		// TODO: Return information about received files
-		throw new UnsupportedOperationException("getReceives not implemented yet");
+		HashMap<String, Object> body = new HashMap<>();
+		body.put("command", "get_receives");
+		body.put("response", "ok");
+		body.put("sent_files", PeerApp.getSentFiles());
+		return new Message(body, Message.Type.response);
 	}
 
 	private static Message getSends() {
 		// TODO: Return information about sent files
-		throw new UnsupportedOperationException("getSends not implemented yet");
+		HashMap<String, Object> body = new HashMap<>();
+		body.put("command", "get_sends");
+		body.put("response", "ok");
+		body.put("received_files", PeerApp.getReceivedFiles());
+		return new Message(body, Message.Type.response);
 	}
 
 	public static Message getFilesList() {

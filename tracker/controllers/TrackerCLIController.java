@@ -1,5 +1,6 @@
 package tracker.controllers;
 
+import common.models.CLICommands;
 import tracker.app.PeerConnectionThread;
 import tracker.app.TrackerApp;
 
@@ -12,18 +13,25 @@ public class TrackerCLIController {
 			return endProgram();
 		} else if (TrackerCommands.LIST_PEERS.matches(command)) {
 			return listPeers();
-		} else {
-			return "invalid command";
+		} else if (TrackerCommands.GET_RECEIVES.matches(command)) {
+			return getReceives(command);
+		}
+		else {
+			return CLICommands.invalidCommand;
 		}
 	}
 
 	private static String getReceives(String command) {
 		// TODO: Get list of files received by a peer
+		String IP = TrackerCommands.GET_RECEIVES.getGroup(command, "IP");
+		String port = TrackerCommands.GET_RECEIVES.getGroup(command, "port");
 		throw new UnsupportedOperationException("getReceives not implemented yet");
 	}
 
 	private static String getSends(String command) {
 		// TODO: Get list of files sent by a peer
+		String IP = TrackerCommands.GET_RECEIVES.getGroup(command, "IP");
+		String port = TrackerCommands.GET_RECEIVES.getGroup(command, "port");
 		throw new UnsupportedOperationException("getSends not implemented yet");
 	}
 

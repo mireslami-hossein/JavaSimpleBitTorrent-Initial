@@ -10,6 +10,8 @@ public class TrackerConnectionController {
 	public static Message handleCommand(Message message) {
 		// TODO: Handle incoming peer-to-tracker commands
 		// 1. Validate message type and content
+		if (message.getType() != Message.Type.file_request) return null;
+		String fileName = message.getFromBody("name");
 		// 2. Find peers having the requested file
 		// 3. Check for hash consistency
 		// 4. Return peer information or error

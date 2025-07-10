@@ -1,5 +1,6 @@
 package peer.controllers;
 
+import common.models.CLICommands;
 import common.utils.FileUtils;
 import peer.app.PeerApp;
 
@@ -14,7 +15,7 @@ public class PeerCLIController {
 		} else if (PeerCommands.LIST.matches(command)) {
 			return handleListFiles();
 		} else {
-			return "invalid command";
+			return CLICommands.invalidCommand;
 		}
 		// 2. Call appropriate handler
 		// 3. Return result or error message
