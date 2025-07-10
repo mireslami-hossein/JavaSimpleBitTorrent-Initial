@@ -29,7 +29,6 @@ public class PeerConnectionThread extends ConnectionThread {
 				System.err.println("Peer did not respond to the status command. Handshake failed.");
 				return false;
 			}
-			System.out.println(statusOfPeer.toString());
 
 			body = new HashMap<>();
 			body.put("command", "get_files_list");
@@ -49,7 +48,8 @@ public class PeerConnectionThread extends ConnectionThread {
 			this.setOtherSideIP(ipOfPeer);
 			this.setOtherSidePort(portOfPeer);
 			TrackerApp.addPeerConnection(this);
-			System.out.println("Peer connected: " + this.getOtherSideIP() + ":" + this.getOtherSidePort());
+			// TODO : delete
+//			System.out.println("Peer connected: " + this.getOtherSideIP() + ":" + this.getOtherSidePort());
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

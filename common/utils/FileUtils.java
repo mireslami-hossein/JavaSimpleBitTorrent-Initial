@@ -34,6 +34,7 @@ public class FileUtils {
 		for (String key : sortedFiles.keySet()) {
 			sortedFileList.append(key + " " + sortedFiles.get(key) + "\n");
 		}
+		sortedFileList.deleteCharAt(sortedFileList.length() - 1);
 		return sortedFileList.toString();
 	}
 

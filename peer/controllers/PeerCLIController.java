@@ -1,19 +1,28 @@
 package peer.controllers;
 
+import common.utils.FileUtils;
 import peer.app.PeerApp;
+
+import java.util.Map;
 
 public class PeerCLIController {
 	public static String processCommand(String command) {
 		// TODO: Process Peer CLI commands
 		// 1. Check command type (END_PROGRAM, DOWNLOAD, LIST)
+		if (PeerCommands.END.matches(command)) {
+			return endProgram();
+		} else if (PeerCommands.LIST.matches(command)) {
+			return handleListFiles();
+		} else {
+			return "invalid command";
+		}
 		// 2. Call appropriate handler
 		// 3. Return result or error message
-		throw new UnsupportedOperationException("processCommand not implemented yet");
 	}
 
 	private static String handleListFiles() {
-		// TODO: Handle list files command
-		throw new UnsupportedOperationException("handleListFiles not implemented yet");
+		Map<String, String> files =  FileUtils.listFilesInFolder(PeerApp.getSharedFolderPath());
+		return FileUtils.getSortedFileList(files);
 	}
 
 	private static String handleDownload(String command) {

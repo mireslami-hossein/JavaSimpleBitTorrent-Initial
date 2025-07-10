@@ -1,14 +1,20 @@
 package tracker.controllers;
 
+import tracker.app.PeerConnectionThread;
 import tracker.app.TrackerApp;
+
+import java.util.List;
 
 public class TrackerCLIController {
 	public static String processCommand(String command) {
 		// TODO: Process tracker CLI commands
-		// 1. Check command type (END_PROGRAM, REFRESH_FILES, RESET_CONNECTIONS, LIST_PEERS, LIST_FILES, GET_RECEIVES, GET_SENDS)
-		// 2. Call appropriate handler
-		// 3. Return result or error message
-		throw new UnsupportedOperationException("processCommand not implemented yet");
+		if (TrackerCommands.END.matches(command)) {
+			return endProgram();
+		} else if (TrackerCommands.LIST_PEERS.matches(command)) {
+			return listPeers();
+		} else {
+			return "invalid command";
+		}
 	}
 
 	private static String getReceives(String command) {
@@ -27,8 +33,16 @@ public class TrackerCLIController {
 	}
 
 	private static String listPeers() {
-		// TODO: List all connected peers
-		throw new UnsupportedOperationException("listPeers not implemented yet");
+		List<PeerConnectionThread> connections = TrackerApp.getConnections();
+		if (connections.isEmpty()) {
+			return "No peers connected.";
+		}
+		StringBuilder result = new StringBuilder();
+		for (PeerConnectionThread connection : connections) {
+			result.append(connection.getOtherSideIP() + ":" + connection.getOtherSidePort()).append("\n");
+		}
+		result.deleteCharAt(result.length() - 1);
+		return result.toString();
 	}
 
 	private static String resetConnections() {
