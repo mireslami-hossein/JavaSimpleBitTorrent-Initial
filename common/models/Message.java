@@ -34,4 +34,9 @@ public class Message {
 		file_request,
 		download_request
 	}
+
+	@Override
+	public String toString() {
+		return "Type: " + type + "\nBody: " + body;
+	}
 }

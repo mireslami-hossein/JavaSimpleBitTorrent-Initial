@@ -8,7 +8,7 @@ import java.util.*;
 public class PeerApp {
 	public static final int TIMEOUT_MILLIS = 500;
 
-	// TODO: static fields for peer's ip, port, shared folder path, sent files, received files,
+	// static fields for peer's ip, port, shared folder path, sent files, received files,
 	//  tracker connection thread, p2p listener thread, torrent p2p threads
 	private static String myIP;
 	private static int myPort;
@@ -29,7 +29,6 @@ public class PeerApp {
 	}
 
 	public static void initFromArgs(String[] args) throws Exception {
-		// TODO: Initialize peer with command line arguments
 		// 1. Parse self address (ip:port)
 		String[] selfAddress = args[0].split(":");
 		myIP = selfAddress[0];
@@ -47,7 +46,6 @@ public class PeerApp {
 
 		// 5. Create peer listener thread
 		peerListenerThread = new P2PListenerThread(myPort);
-		throw new UnsupportedOperationException("Initialization not implemented yet");
 	}
 
 	public static void endAll() {

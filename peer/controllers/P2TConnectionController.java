@@ -1,7 +1,11 @@
 package peer.controllers;
 
 import common.models.Message;
+import common.utils.FileUtils;
 import peer.app.P2TConnectionThread;
+import peer.app.PeerApp;
+
+import java.util.HashMap;
 
 public class P2TConnectionController {
 	public static Message handleCommand(Message message) {
@@ -23,13 +27,23 @@ public class P2TConnectionController {
 	}
 
 	public static Message getFilesList() {
-		// TODO: Return list of files in shared folder
-		throw new UnsupportedOperationException("getFilesList not implemented yet");
+		// Return list of files in shared folder
+		HashMap<String, Object> messageBody = new HashMap<>();
+		messageBody.put("command", "get_files_list");
+		messageBody.put("response",	"ok");
+		messageBody.put("files", FileUtils.listFilesInFolder(PeerApp.getSharedFolderPath()));
+		return new Message(messageBody, Message.Type.response);
 	}
 
 	public static Message status() {
-		// TODO: Return peer status information
-		throw new UnsupportedOperationException("status not implemented yet");
+		// Return peer status information
+		HashMap<String, Object> messageBody  = new HashMap<>();
+		messageBody.put("command", "status");
+		messageBody.put("response", "ok");
+		messageBody.put("peer", PeerApp.getPeerIP());
+		messageBody.put("listen_port", PeerApp.getPeerPort());
+
+		return new Message(messageBody, Message.Type.response);
 	}
 
 	public static Message sendFileRequest(P2TConnectionThread tracker, String fileName) throws Exception {

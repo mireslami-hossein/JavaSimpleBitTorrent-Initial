@@ -10,7 +10,10 @@ public class TrackerApp {
 	private static ListenerThread listenerThread;
 
 	public static PeerConnectionThread getConnectionByIpPort(String ip, int port) {
-		// TODO: Implement peer connection lookup
+		for (PeerConnectionThread connection : connections) {
+			if(connection.getOtherSideIP().equals(ip) && connection.getOtherSidePort() == port)
+				return connection;
+		}
 		return null;
 	}
 

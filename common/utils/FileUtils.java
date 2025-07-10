@@ -6,9 +6,6 @@ import java.util.*;
 public class FileUtils {
 
 	public static Map<String, String> listFilesInFolder(String folderPath) {
-		// TODO: List files in folder
-		// 3. Calculate MD5 hash for each file
-		// 4. Return map of filename to hash
 		// 1. Create folder object
 		Map<String, String> fileHashes = new HashMap<>();
 		File file = new File(folderPath);
@@ -17,6 +14,8 @@ public class FileUtils {
 			File[] files = file.listFiles();
 			for (File f : files) {
 				if (f.isFile())
+					// 3. Calculate MD5 hash for each file
+					// 4. Return map of filename to hash
 					fileHashes.put(f.getName(), MD5Hash.HashFile(f.getPath()));
 			}
 		}

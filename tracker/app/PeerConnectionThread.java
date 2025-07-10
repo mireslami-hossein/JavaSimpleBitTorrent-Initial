@@ -9,8 +9,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import static tracker.app.TrackerApp.TIMEOUT_MILLIS;
-
 public class PeerConnectionThread extends ConnectionThread {
 	private HashMap<String, String> fileAndHashes;
 
@@ -22,9 +20,39 @@ public class PeerConnectionThread extends ConnectionThread {
 	public boolean initialHandshake() {
 		try {
 			// TODO: Implement initial handshake
-			// Refresh peer status (IP and port), Get peer's file list, Add connection to tracker's connection list
-			throw new UnsupportedOperationException("Initial handshake not implemented yet");
+			// Refresh peer statusCommand (IP and port), Get peer's file list, Add connection to tracker's connection list
+			HashMap<String, Object> body = new HashMap<>();
+			body.put("command", "status");
+			Message statusCommand = new Message(body, Message.Type.command);
+			Message statusOfPeer = sendAndWaitForResponse(statusCommand, TrackerApp.TIMEOUT_MILLIS);
+			if (statusOfPeer == null) {
+				System.err.println("Peer did not respond to the status command. Handshake failed.");
+				return false;
+			}
+			System.out.println(statusOfPeer.toString());
+
+			body = new HashMap<>();
+			body.put("command", "get_files_list");
+			Message getFiles = new Message(body, Message.Type.command);
+			Message filesListResponse = sendAndWaitForResponse(getFiles, TrackerApp.TIMEOUT_MILLIS);
+			if (filesListResponse == null) {
+				System.err.println("Peer did not respond to the filesList command. Handshake failed.");
+				return false;
+			}
+
+			String ipOfPeer = statusOfPeer.getFromBody("peer");
+			int portOfPeer = statusOfPeer.getIntFromBody("listen_port");
+
+			Map<String,String> filesList = filesListResponse.getFromBody("files");
+			this.fileAndHashes = new HashMap<>(filesList);
+
+			this.setOtherSideIP(ipOfPeer);
+			this.setOtherSidePort(portOfPeer);
+			TrackerApp.addPeerConnection(this);
+			System.out.println("Peer connected: " + this.getOtherSideIP() + ":" + this.getOtherSidePort());
+			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
