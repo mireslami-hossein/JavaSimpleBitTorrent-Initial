@@ -1,9 +1,16 @@
 package peer.app;
 
+import common.models.ConnectionThread;
+import common.models.Message;
+import common.utils.FileUtils;
+import common.utils.JSONUtils;
+import common.utils.MD5Hash;
 import tracker.app.ListenerThread;
 
+import java.io.*;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 public class PeerApp {
 	public static final int TIMEOUT_MILLIS = 500;
@@ -57,8 +64,7 @@ public class PeerApp {
 			thread.end();
 		}
 		//TODO: 3. Clear file lists
-
-		throw new UnsupportedOperationException("Cleanup not implemented yet");
+		System.out.println("PeerApp ended");
 	}
 
 	public static void connectTracker() {
@@ -74,17 +80,18 @@ public class PeerApp {
 	}
 
 	public static void removeTorrentP2PThread(TorrentP2PThread torrentP2PThread) {
-		// TODO: Remove and cleanup torrent thread
-		throw new UnsupportedOperationException("Torrent P2P thread not implemented yet");
+		if (torrentP2PThreads.contains(torrentP2PThread))
+			torrentP2PThreads.remove(torrentP2PThread);
 	}
 
 	public static void addTorrentP2PThread(TorrentP2PThread torrentP2PThread) {
-		// TODO: Add new torrent thread
 		// 1. Check if thread is valid
+		if (torrentP2PThread == null) return;
 		// 2. Check if already exists
+		if (torrentP2PThreads.contains(torrentP2PThread)) return;
+
 		// 3. Add to list
 		torrentP2PThreads.add(torrentP2PThread);
-		throw new UnsupportedOperationException("Torrent P2P thread not implemented yet");
 	}
 
 	public static String getSharedFolderPath() {
@@ -92,7 +99,6 @@ public class PeerApp {
 	}
 
 	public static void addSentFile(String receiver, String fileNameAndHash) {
-//		TODO : call in download file
 		List<String> files = sentFilesHashes.get(receiver);
 		if (files == null) {
 			files = new ArrayList<>();
@@ -101,7 +107,6 @@ public class PeerApp {
 	}
 
 	public static void addReceivedFile(String sender, String fileNameAndHash) {
-		//	TODO : call in download file
 		List<String> files = receivedFilesHashes.get(sender);
 		if (files == null) {
 			files = new ArrayList<>();
@@ -129,16 +134,55 @@ public class PeerApp {
 		return trackerConnectionThread;
 	}
 
-	public static void requestDownload(String ip, int port, String filename, String md5) throws Exception {
+	public static void requestDownload(String ip, int port, String fileName, String md5) throws Exception {
 		// TODO: Implement file download from peer
 		// 1. Check if file already exists
+		Map<String, String> files = FileUtils.listFilesInFolder(sharedFolderPath);
+		if (files.containsKey(fileName)) {
+			throw new Exception("file_exists");
+		}
+
 		// 2. Create download request message
+		HashMap<String, Object> body = new HashMap<>();
+		body.put("name", fileName);
+		body.put("md5", md5);
+		body.put("receiver_ip", myIP);
+		body.put("receiver_port", myPort);
+		Message requestMessage = new Message(body, Message.Type.download_request);
+
 		// 3. Connect to peer
-		// 4. Send request
-		// 5. Receive file data
-		// 6. Save file
-		// 7. Verify file integrity
-		// 8. Update received files list
-		throw new UnsupportedOperationException("File download not implemented yet");
+		try (Socket peerSocket = new Socket(ip, port)) {
+			peerSocket.setSoTimeout(TIMEOUT_MILLIS);
+
+			// 4. Send request
+			DataOutputStream outToPeer = new DataOutputStream(peerSocket.getOutputStream());
+			outToPeer.writeUTF(JSONUtils.toJson(requestMessage));
+			outToPeer.flush();
+
+			// 5. Receive file data
+			DataInputStream inFromPeer = new DataInputStream(peerSocket.getInputStream());
+
+			// 6. Save file
+			File newFile = new File(sharedFolderPath + File.separator + fileName);
+			BufferedOutputStream fileOutput = new BufferedOutputStream(new FileOutputStream(newFile));
+
+			byte[] bytes = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = inFromPeer.read(bytes)) != -1) {
+				fileOutput.write(bytes, 0, bytesRead);
+			}
+			fileOutput.flush();
+			fileOutput.close();
+			inFromPeer.close();
+
+			// 7. Verify file integrity
+			String md5OfReceivedFile = MD5Hash.HashFile(fileName);
+			if (!md5OfReceivedFile.equals(md5))
+				throw new Exception("conflict");
+
+			// 8. Update received files list
+			addReceivedFile(ip + ":" + port, fileName + " " + md5);
+		}
+
 	}
 }

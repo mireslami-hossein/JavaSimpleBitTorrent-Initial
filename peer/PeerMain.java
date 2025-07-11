@@ -6,6 +6,12 @@ import peer.controllers.PeerCLIController;
 import java.util.Scanner;
 
 public class PeerMain {
+	// For run:
+	// java peer.PeerMain localhost:7070 localhost:8080 files
+	// java peer.PeerMain localhost:5050 localhost:8080 filesPeer2
+	//
+
+
 	private static final Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) {

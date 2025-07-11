@@ -41,18 +41,16 @@ public class PeerCLIController {
 		String fileName = PeerCommands.DOWNLOAD.getGroup(command, "name");
 		P2TConnectionThread connection = PeerApp.getP2TConnection();
 		try {
-			// check File existence in our repository
-			Map<String, String> files = FileUtils.listFilesInFolder(PeerApp.getSharedFolderPath());
-			if (files.containsKey(fileName)) {
-				throw new Exception("file_exists");
-			}
-
 			Message requestFile = P2TConnectionController.sendFileRequest(connection, fileName);
 			// File is correct
 			if (requestFile.getFromBody("response").equals("peer_found")) {
 				String IP = requestFile.getFromBody("peer_have");
 				int port = requestFile.getIntFromBody("peer_port");
-				PeerApp.addTorrentP2PThread(new TorrentP2PThread(new Socket(IP, port), ));
+				String fileHash = requestFile.getFromBody("md5");
+
+				PeerApp.requestDownload(IP, port, fileName, fileHash);
+
+				return "File downloaded successfully: " + fileName;
 			}
 		} catch (Exception e) {
 			if (e.getMessage().equals("file_exists"))
@@ -61,7 +59,9 @@ public class PeerCLIController {
 				return "No peer has the file!";
 			else if (e.getMessage().equals("multiple_hash"))
 				return "Multiple hashes found!";
-			else
+			else if (e.getMessage().equals("conflict"))
+				return "The file has been downloaded from peer but is corrupted!";
+			else // TODO : delete maybe
 				return e.getMessage();
 		}
 
