@@ -26,7 +26,8 @@ public class TrackerMain {
 
 		while (!TrackerApp.isEnded()) {
 			String result = TrackerCLIController.processCommand(scanner.nextLine().trim());
-			System.out.println(result);
+			if (!result.isEmpty())
+				System.out.println(result);
 		}
 		scanner.close();
 	}

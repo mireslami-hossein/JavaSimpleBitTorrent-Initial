@@ -1,7 +1,6 @@
 package tracker.controllers;
 
 import common.models.CLICommands;
-import common.models.Message;
 import common.utils.FileUtils;
 import tracker.app.PeerConnectionThread;
 import tracker.app.TrackerApp;
@@ -23,6 +22,8 @@ public class TrackerCLIController {
 			return listFiles(command);
 		} else if (TrackerCommands.REFRESH_FILES.matches(command)) {
 			return refreshFiles();
+		} else if (TrackerCommands.RESET_CONNECTIONS.matches(command)) {
+			return resetConnections();
 		}
 		else {
 			return CLICommands.invalidCommand;
@@ -113,9 +114,17 @@ public class TrackerCLIController {
 	}
 
 	private static String resetConnections() {
-		// TODO: Reset all peer connections
 		// Refresh status and file list for each peer
-		throw new UnsupportedOperationException("resetConnections not implemented yet");
+		List<PeerConnectionThread> connectionsCopyList = TrackerApp.getConnections();
+		for (PeerConnectionThread connection : connectionsCopyList) {
+			try {
+				connection.refreshStatus();
+				connection.refreshFileList();
+			} catch (Exception e) {
+				TrackerApp.removePeerConnection(connection);
+			}
+		}
+		return "";
 	}
 
 	private static String refreshFiles() {

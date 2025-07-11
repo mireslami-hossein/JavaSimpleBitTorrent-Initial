@@ -5,6 +5,7 @@ import common.models.Message;
 import tracker.controllers.TrackerConnectionController;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class PeerConnectionThread extends ConnectionThread {
 		}
 	}
 
-	public void refreshStatus() {
+	public void refreshStatus() throws ConnectException {
 		// Send status command and update peer's IP and port and wait for response
 		// then update peer's IP and port
 
@@ -40,7 +41,7 @@ public class PeerConnectionThread extends ConnectionThread {
 		body.put("command", "status");
 		Message statusCommand = new Message(body, Message.Type.command);
 		Message statusOfPeer = sendAndWaitForResponse(statusCommand, TrackerApp.TIMEOUT_MILLIS);
-
+		if (statusOfPeer == null) throw new ConnectException("timeout");
 		this.setOtherSideIP(statusOfPeer.getFromBody("peer"));
 		this.setOtherSidePort(statusOfPeer.getIntFromBody("listen_port"));
 	}
