@@ -2,9 +2,11 @@ package tracker.controllers;
 
 import common.models.Message;
 import peer.app.PeerApp;
+import peer.controllers.PeerCommands;
 import tracker.app.PeerConnectionThread;
 import tracker.app.TrackerApp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +18,47 @@ public class TrackerConnectionController {
 		if (message.getType() != Message.Type.file_request) return null;
 		String fileName = message.getFromBody("name");
 		// 2. Find peers having the requested file
-		// 3. Check for hash consistency
-		// 4. Return peer information or error
-		throw new UnsupportedOperationException("handleCommand not implemented yet");
+		List<PeerConnectionThread> peerConnections = new ArrayList<>();
+		String hashOfFile = null;
+
+		HashMap<String, Object> body  = new HashMap<>();
+		for (PeerConnectionThread connection : TrackerApp.getConnections()) {
+			String hashOfPeerFile = connection.getFileAndHashes().get(fileName);
+			if (hashOfPeerFile == null) continue;
+
+			if (hashOfFile == null) hashOfFile = hashOfPeerFile;
+			else {
+				// 3. Check for hash consistency
+				if (!hashOfFile.equals(hashOfPeerFile)) {
+					// Error : HashConflict
+					body.put("response", "error");
+					body.put("error", "multiple_hash");
+					return new Message(body, Message.Type.response);
+				} else {
+					peerConnections.add(connection);
+				}
+			}
+		}
+
+		if (hashOfFile == null) {
+			// Error : FileNotFound
+			body.put("response", "error");
+			body.put("error", "not_found");
+			return new Message(body, Message.Type.response);
+		}
+
+		// 4. Return peer information
+		PeerConnectionThread randomConnection = peerConnections.get((int)(Math.random() * peerConnections.size()));
+		String peerIP = randomConnection.getOtherSideIP();
+		int peerPort = randomConnection.getOtherSidePort();
+
+		// if ok
+		body.put("response", "peer_found");
+		body.put("md5", hashOfFile);
+		body.put("peer_have", peerIP);
+		body.put("peer_port", peerPort);
+
+		return new Message(body, Message.Type.response);
 	}
 
 	public static Map<String, List<String>> getSends(PeerConnectionThread connection) {

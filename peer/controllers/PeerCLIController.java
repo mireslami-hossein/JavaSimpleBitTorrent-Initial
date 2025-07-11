@@ -1,9 +1,15 @@
 package peer.controllers;
 
 import common.models.CLICommands;
+import common.models.Message;
 import common.utils.FileUtils;
+import peer.app.P2TConnectionThread;
 import peer.app.PeerApp;
+import peer.app.TorrentP2PThread;
+import tracker.app.TrackerApp;
 
+import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PeerCLIController {
@@ -14,7 +20,10 @@ public class PeerCLIController {
 			return endProgram();
 		} else if (PeerCommands.LIST.matches(command)) {
 			return handleListFiles();
-		} else {
+		} else if (PeerCommands.DOWNLOAD.matches(command)) {
+			return handleDownload(command);
+		}
+		else {
 			return CLICommands.invalidCommand;
 		}
 		// 2. Call appropriate handler
@@ -29,6 +38,33 @@ public class PeerCLIController {
 	private static String handleDownload(String command) {
 		// TODO: Handle download command
 		// Send file request to tracker
+		String fileName = PeerCommands.DOWNLOAD.getGroup(command, "name");
+		P2TConnectionThread connection = PeerApp.getP2TConnection();
+		try {
+			// check File existence in our repository
+			Map<String, String> files = FileUtils.listFilesInFolder(PeerApp.getSharedFolderPath());
+			if (files.containsKey(fileName)) {
+				throw new Exception("file_exists");
+			}
+
+			Message requestFile = P2TConnectionController.sendFileRequest(connection, fileName);
+			// File is correct
+			if (requestFile.getFromBody("response").equals("peer_found")) {
+				String IP = requestFile.getFromBody("peer_have");
+				int port = requestFile.getIntFromBody("peer_port");
+				PeerApp.addTorrentP2PThread(new TorrentP2PThread(new Socket(IP, port), ));
+			}
+		} catch (Exception e) {
+			if (e.getMessage().equals("file_exists"))
+				return "You already have the file!";
+			else if (e.getMessage().equals("not_found"))
+				return "No peer has the file!";
+			else if (e.getMessage().equals("multiple_hash"))
+				return "Multiple hashes found!";
+			else
+				return e.getMessage();
+		}
+
 		// Get peer info and file hash
 		// Request file from peer
 		// Return success or error message

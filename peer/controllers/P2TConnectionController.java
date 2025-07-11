@@ -63,8 +63,17 @@ public class P2TConnectionController {
 	public static Message sendFileRequest(P2TConnectionThread tracker, String fileName) throws Exception {
 		// TODO: Send file request to tracker and handle response
 		// 1. Build request message
+		HashMap<String, Object> body  = new HashMap<>();
+		body.put("name", fileName);
+
 		// 2. Send message and wait for response
+		Message fileRequest = new Message(body, Message.Type.file_request);
+		Message response = tracker.sendAndWaitForResponse(fileRequest, PeerApp.TIMEOUT_MILLIS);
 		// 3. raise exception if error or return response
-		throw new UnsupportedOperationException("sendFileRequest not implemented yet");
+		if (response.getFromBody("response").equals("error")) {
+			throw new Exception((String) response.getFromBody("error"));
+		} else {
+			return response;
+		}
 	}
 }
