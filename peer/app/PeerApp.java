@@ -61,7 +61,6 @@ public class PeerApp {
 			thread.end();
 		}
 		//TODO: 3. Clear file lists
-//		System.out.println("PeerApp ended");
 	}
 
 	public static void connectTracker() {
@@ -170,9 +169,7 @@ public class PeerApp {
 			BufferedOutputStream fileOutput = new BufferedOutputStream(new FileOutputStream(newFile));
 			byte[] bytes = new byte[1024];
 			int bytesRead;
-//			System.out.println("reading file form peer: path: " + path + " file exists:" + newFile.exists());
 			while ((bytesRead = inFromPeer.read(bytes)) != -1) {
-//				System.out.println(new String(bytes, 0, bytesRead));
 				fileOutput.write(bytes, 0, bytesRead);
 			}
 			fileOutput.flush();

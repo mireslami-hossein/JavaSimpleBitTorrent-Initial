@@ -9,7 +9,6 @@ import java.util.*;
 
 public class TrackerCLIController {
 	public static String processCommand(String command) {
-		// TODO: Process tracker CLI commands
 		if (TrackerCommands.END.matches(command)) {
 			return endProgram();
 		} else if (TrackerCommands.LIST_PEERS.matches(command)) {

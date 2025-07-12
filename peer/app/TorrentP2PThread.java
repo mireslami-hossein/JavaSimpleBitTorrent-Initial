@@ -21,8 +21,6 @@ public class TorrentP2PThread extends Thread {
 
 	@Override
 	public void run() {
-		// TODO: Implement file transfer
-//		System.out.println("file transfer started!!");
 		try {
 			if (!file.exists() || !file.isFile() || !file.canRead()) {
 				socket.close();

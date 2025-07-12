@@ -23,7 +23,6 @@ public class P2TConnectionController {
     }
 
 	private static Message getReceives() {
-		// TODO: Return information about received files
 		HashMap<String, Object> body = new HashMap<>();
 		body.put("command", "get_receives");
 		body.put("response", "ok");
@@ -32,12 +31,10 @@ public class P2TConnectionController {
 	}
 
 	private static Message getSends() {
-		// TODO: Return information about sent files
 		HashMap<String, Object> body = new HashMap<>();
 		body.put("command", "get_sends");
 		body.put("response", "ok");
 		body.put("sent_files", PeerApp.getSentFiles());
-//		System.out.println(PeerApp.getSentFiles());
 		return new Message(body, Message.Type.response);
 	}
 
@@ -62,7 +59,6 @@ public class P2TConnectionController {
 	}
 
 	public static Message sendFileRequest(P2TConnectionThread tracker, String fileName) throws Exception {
-		// TODO: Send file request to tracker and handle response
 		// 1. Build request message
 		HashMap<String, Object> body  = new HashMap<>();
 		body.put("name", fileName);

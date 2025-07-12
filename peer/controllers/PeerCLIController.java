@@ -10,8 +10,9 @@ import java.util.Map;
 
 public class PeerCLIController {
 	public static String processCommand(String command) {
-		// TODO: Process Peer CLI commands
 		// 1. Check command type (END_PROGRAM, DOWNLOAD, LIST)
+		// 2. Call appropriate handler
+		// 3. Return result or error message
 		if (PeerCommands.END.matches(command)) {
 			return endProgram();
 		} else if (PeerCommands.LIST.matches(command)) {
@@ -22,8 +23,6 @@ public class PeerCLIController {
 		else {
 			return CLICommands.invalidCommand;
 		}
-		// 2. Call appropriate handler
-		// 3. Return result or error message
 	}
 
 	private static String handleListFiles() {
@@ -32,7 +31,6 @@ public class PeerCLIController {
 	}
 
 	private static String handleDownload(String command) {
-		// TODO: Handle download command
 		// Send file request to tracker
 		String fileName = PeerCommands.DOWNLOAD.getGroup(command, "name");
 		P2TConnectionThread connection = PeerApp.getP2TConnection();

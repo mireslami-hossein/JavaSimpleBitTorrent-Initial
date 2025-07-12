@@ -24,7 +24,6 @@ public class ListenerThread extends Thread {
 	public void run() {
 		while (!TrackerApp.isEnded()) {
 			try {
-//				System.out.println("Waiting for peer connection...");
 				Socket socket = serverSocket.accept();
 				handleConnection(socket);
 			} catch (Exception e) {
