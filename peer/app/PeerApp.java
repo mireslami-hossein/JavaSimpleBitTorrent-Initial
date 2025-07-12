@@ -1,16 +1,13 @@
 package peer.app;
 
-import common.models.ConnectionThread;
 import common.models.Message;
 import common.utils.FileUtils;
 import common.utils.JSONUtils;
 import common.utils.MD5Hash;
-import tracker.app.ListenerThread;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.ConcurrentNavigableMap;
 
 public class PeerApp {
 	public static final int TIMEOUT_MILLIS = 500;
@@ -64,7 +61,7 @@ public class PeerApp {
 			thread.end();
 		}
 		//TODO: 3. Clear file lists
-		System.out.println("PeerApp ended");
+//		System.out.println("PeerApp ended");
 	}
 
 	public static void connectTracker() {

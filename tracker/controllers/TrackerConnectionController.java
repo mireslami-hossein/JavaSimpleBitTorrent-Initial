@@ -1,8 +1,6 @@
 package tracker.controllers;
 
 import common.models.Message;
-import peer.app.PeerApp;
-import peer.controllers.PeerCommands;
 import tracker.app.PeerConnectionThread;
 import tracker.app.TrackerApp;
 

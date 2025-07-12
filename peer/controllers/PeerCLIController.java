@@ -5,11 +5,7 @@ import common.models.Message;
 import common.utils.FileUtils;
 import peer.app.P2TConnectionThread;
 import peer.app.PeerApp;
-import peer.app.TorrentP2PThread;
-import tracker.app.TrackerApp;
 
-import java.net.Socket;
-import java.util.HashMap;
 import java.util.Map;
 
 public class PeerCLIController {
