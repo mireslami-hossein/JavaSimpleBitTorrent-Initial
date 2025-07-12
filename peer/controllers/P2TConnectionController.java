@@ -37,6 +37,7 @@ public class P2TConnectionController {
 		body.put("command", "get_sends");
 		body.put("response", "ok");
 		body.put("sent_files", PeerApp.getSentFiles());
+//		System.out.println(PeerApp.getSentFiles());
 		return new Message(body, Message.Type.response);
 	}
 

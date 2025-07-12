@@ -73,6 +73,7 @@ public class PeerCLIController {
 
 	public static String endProgram() {
 		PeerApp.endAll();
+		System.exit(0);
 		return "";
 	}
 }

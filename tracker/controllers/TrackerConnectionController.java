@@ -68,6 +68,7 @@ public class TrackerConnectionController {
 
 		// 2. Send message and wait for response
 		Message response = connection.sendAndWaitForResponse(message, TrackerApp.TIMEOUT_MILLIS);
+		System.out.println(response);
 		if (response == null) return null;
 
 		// 3. Parse and return sent files map

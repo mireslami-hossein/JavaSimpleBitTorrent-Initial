@@ -96,6 +96,8 @@ public class PeerApp {
 	}
 
 	public static void addSentFile(String receiver, String fileNameAndHash) {
+		if (!sentFilesHashes.containsKey(receiver))
+			sentFilesHashes.put(receiver, new ArrayList<>());
 		List<String> files = sentFilesHashes.get(receiver);
 		if (files == null) {
 			files = new ArrayList<>();
@@ -104,6 +106,9 @@ public class PeerApp {
 	}
 
 	public static void addReceivedFile(String sender, String fileNameAndHash) {
+		if (!receivedFilesHashes.containsKey(sender))
+			receivedFilesHashes.put(sender, new ArrayList<>());
+
 		List<String> files = receivedFilesHashes.get(sender);
 		if (files == null) {
 			files = new ArrayList<>();

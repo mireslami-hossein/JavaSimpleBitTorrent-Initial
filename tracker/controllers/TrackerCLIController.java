@@ -78,7 +78,6 @@ public class TrackerCLIController {
 			Collections.sort(filesSorted);
 		}
 
-		// TODO : check sort
 		TreeMap<String, List<String>> sortedSentFiles = new TreeMap<>(sentFiles);
 		for (Map.Entry<String, List<String>> entry : sortedSentFiles.entrySet()) {
 			for (String fileData : entry.getValue()) {
