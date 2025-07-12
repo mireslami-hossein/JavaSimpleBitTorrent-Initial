@@ -27,7 +27,7 @@ public class P2TConnectionController {
 		HashMap<String, Object> body = new HashMap<>();
 		body.put("command", "get_receives");
 		body.put("response", "ok");
-		body.put("sent_files", PeerApp.getSentFiles());
+		body.put("received_files", PeerApp.getReceivedFiles());
 		return new Message(body, Message.Type.response);
 	}
 
@@ -36,7 +36,7 @@ public class P2TConnectionController {
 		HashMap<String, Object> body = new HashMap<>();
 		body.put("command", "get_sends");
 		body.put("response", "ok");
-		body.put("received_files", PeerApp.getReceivedFiles());
+		body.put("sent_files", PeerApp.getSentFiles());
 		return new Message(body, Message.Type.response);
 	}
 

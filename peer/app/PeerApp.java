@@ -173,7 +173,7 @@ public class PeerApp {
 			inFromPeer.close();
 
 			// 7. Verify file integrity
-			String md5OfReceivedFile = MD5Hash.HashFile(fileName);
+			String md5OfReceivedFile = MD5Hash.HashFile(sharedFolderPath + File.separator + fileName);
 			if (!md5OfReceivedFile.equals(md5))
 				throw new Exception("conflict");
 
