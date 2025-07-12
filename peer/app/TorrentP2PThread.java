@@ -22,33 +22,44 @@ public class TorrentP2PThread extends Thread {
 	@Override
 	public void run() {
 		// TODO: Implement file transfer
-
+//		System.out.println("file transfer started!!");
 		try {
+			if (!file.exists() || !file.isFile() || !file.canRead()) {
+				socket.close();
+				return;
+			}
+
 			// 1. Open file input stream
 			FileInputStream fileInput = new FileInputStream(file);
+
 			// 2. Read file in chunks and send to peer
+			DataOutputStream socketOutStream = new DataOutputStream(socket.getOutputStream());
+
 			byte[] buffer = new byte[1024];
 			int bytesRead;
-
-			DataOutputStream socketOutStream = new DataOutputStream(socket.getOutputStream());
 			while ((bytesRead = fileInput.read(buffer)) != -1) {
 				socketOutStream.write(buffer, 0, bytesRead);
 			}
 			// 3. Flush and close output stream
 			socketOutStream.flush();
-
 			socketOutStream.close();
-			fileInput.close();
 
+			fileInput.close();
 			// 4. Update sent files list with file name and MD5 hash
 			PeerApp.addSentFile(receiver, file.getName() + " " +
 					MD5Hash.HashFile(file.getPath()));
-			socket.close();
 		} catch (Exception e) {
-			e.printStackTrace(); // TODO : delete
-		}
+			System.err.println("Error during file transfer to " + receiver + ": " + e.getMessage());//TODO delete
+		} finally {
+			try {
+				if (socket != null && !socket.isClosed()) {
+					socket.close();
+				}
+			} catch (IOException e) {
 
-		PeerApp.removeTorrentP2PThread(this);
+			}
+			PeerApp.removeTorrentP2PThread(this);
+		}
 	}
 
 	public void end() {

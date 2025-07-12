@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class TrackerConnectionController {
 	public static Message handleCommand(Message message) {
-		// TODO: Handle incoming peer-to-tracker commands
+
 		// 1. Validate message type and content
 		if (message.getType() != Message.Type.file_request) return null;
 		String fileName = message.getFromBody("name");
@@ -24,6 +24,7 @@ public class TrackerConnectionController {
 			String hashOfPeerFile = connection.getFileAndHashes().get(fileName);
 			if (hashOfPeerFile == null) continue;
 
+			peerConnections.add(connection);
 			if (hashOfFile == null) hashOfFile = hashOfPeerFile;
 			else {
 				// 3. Check for hash consistency

@@ -17,8 +17,8 @@ public class PeerApp {
 	private static String myIP;
 	private static int myPort;
 	private static String sharedFolderPath;
-	private static Map<String, List<String>> sentFilesHashes;
-	private static Map<String, List<String>> receivedFilesHashes;
+	private static Map<String, List<String>> sentFilesHashes = new HashMap<>();
+	private static Map<String, List<String>> receivedFilesHashes =  new HashMap<>();
 
 	// Threads
 	private static P2TConnectionThread trackerConnectionThread;
@@ -160,12 +160,14 @@ public class PeerApp {
 			DataInputStream inFromPeer = new DataInputStream(peerSocket.getInputStream());
 
 			// 6. Save file
-			File newFile = new File(sharedFolderPath + File.separator + fileName);
+			String path = sharedFolderPath + File.separator + fileName;
+			File newFile = new File(path);
 			BufferedOutputStream fileOutput = new BufferedOutputStream(new FileOutputStream(newFile));
-
 			byte[] bytes = new byte[1024];
 			int bytesRead;
+//			System.out.println("reading file form peer: path: " + path + " file exists:" + newFile.exists());
 			while ((bytesRead = inFromPeer.read(bytes)) != -1) {
+//				System.out.println(new String(bytes, 0, bytesRead));
 				fileOutput.write(bytes, 0, bytesRead);
 			}
 			fileOutput.flush();

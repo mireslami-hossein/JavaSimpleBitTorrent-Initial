@@ -48,7 +48,10 @@ public class PeerCLIController {
 
 				return "File downloaded successfully: " + fileName;
 			}
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
+			return "Some Error occurred in getting message! message is null";
+		}
+		catch (Exception e) {
 			if (e.getMessage().equals("file_exists"))
 				return "You already have the file!";
 			else if (e.getMessage().equals("not_found"))
@@ -57,6 +60,7 @@ public class PeerCLIController {
 				return "Multiple hashes found!";
 			else if (e.getMessage().equals("conflict"))
 				return "The file has been downloaded from peer but is corrupted!";
+
 			else // TODO : delete maybe
 				return e.getMessage();
 		}
